@@ -32,7 +32,7 @@ class BookModel(models.Model):
 2.python manage.py migrate
 
 3.Python manage.py shell
->>> from book.models import BookModel
+>>> from .models import BookModel
 >>> BookModel.objects.create(
                        title="title1",author="author1",description="description1").save()
 >>> BookModel.objects.create(
