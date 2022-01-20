@@ -1,0 +1,95 @@
+2. Class Based Views:
+
+-> Class-based views provide an alternative way to implement views as Python objects instead of functions.
+-> They do not replace function-based views, but have certain differences and advantages when compared to function-based views: 
+    - Organization of code related to specific HTTP methods (GET, POST, etc.) can be addressed by separate methods instead of conditional branching.
+    - Object oriented techniques such as mixins (multiple inheritance) can be used to factor code into reusable components.
+
+-> Class-based views are simpler and efficient to manage than function-based views.
+-> A function-based view with tons of lines of code can be converted into class-based views with few lines only.
+-> This is where Object-Oriented Programming comes into impact. 
+
+Class Based Views Example:
+
+""""""
+# models.py
+
+from django.db import models
+
+class BookModel(models.Model):
+    title = models.CharField(max_length=100)
+    author = models.CharField(max_length=100)
+    description = models.TextField()
+
+    # renames the instances of the model
+    # with their title name
+    def __str__(self):
+        return self.title
+""""""
+
+-> After creating this model, we need to run two commands in the terminal:
+1.python manage.py makemigrations
+2.python manage.py migrate
+
+3.Python manage.py shell
+>>> from geeks.models import GeeksModel
+>>> GeeksModel.objects.create(
+                       title="title1",author="author1",description="description1").save()
+>>> GeeksModel.objects.create(
+                       title="title2",author="author2",description="description2").save()
+>>> GeeksModel.objects.create(
+                       title="title3",author="author3",description="description3").save()
+
+""""""
+# admin.py
+
+from .models import BookModel
+from django.contrib import admin
+
+admin.site.register(BookModel)
+""""""
+
+
+""""""
+# views.py
+
+from django.views.generic.list import ListView
+from .models import BookModel
+
+class BookList(ListView):
+    model = BookModel
+    template_name = 'book_list.html'
+
+""""""
+
+""""""
+# urls.py
+
+from django.urls import path
+from .views import BookList
+
+urlpatterns = [
+	path('', BookList.as_view()),
+]
+
+""""""
+
+""""""
+# book_list.html
+
+<ul>
+	<!-- Iterate over object_list -->
+	{% for object in object_list %}
+	<!-- Display Objects -->
+	<li>{{ object.title }}</li>
+	<li>{{ object.author }}</li>
+	<li>{{ object.description }}</li>
+
+	<hr/>
+	<!-- If objet_list is empty -->
+	{% empty %}
+	<li>No objects yet.</li>
+	{% endfor %}
+</ul>
+
+""""""

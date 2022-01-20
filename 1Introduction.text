@@ -1,0 +1,7 @@
+Django Views are one of the vital participants of MVT Structure of Django.
+
+A View function is a Python function that takes a Web request object and returns a Web response.
+
+This response can be the HTML contents of a Web page, or a redirect, or a 404 error, or an XML document, or an image, anything that a web browser can display.
+
+Djnago Views are part of the user interface - they usually render the HTML/CSS/JavaScript in your Template files into what you see in your browser when you render a web page.

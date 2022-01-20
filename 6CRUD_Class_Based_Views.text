@@ -1,0 +1,276 @@
+2. Class Based Generic Views Django (Create, Retrieve, Update, Delete):
+
+-> Django is a Python-based web framework that allows you to quickly create web applications.
+-> It has built-in admin interface which makes easy to work with it.
+-> It is often called Batteries included framework because it provides built-in facilities for every functionality.
+-> Class Based Generic Views are advanced set of Built-in views which are used for implementation of selective view strategies such as Create, Retrieve, Update, Delete.
+-> Class based views simplify the use by separating GET, POST requests for a view.
+->  They do not replace function-based views, but have certain differences and advantages when compared to function-based views:
+    - Organization of code related to specific HTTP methods (GET, POST, etc.) can be addressed by separate methods instead of conditional branching.
+    - Object oriented techniques such as mixins (multiple inheritance) can be used to factor code into reusable components.
+
+- Create : create or add new entries in a table in the database.
+- Retrieve : read, retrieve, search, or view existing entries as a list(ListView) or retrieve a particular entry in detail 
+- Update : update or edit existing entries in a table in the database 
+- Delete : delete, deactivate, or remove existing entries in a table in the database 
+- FormView : render a form to template and handle data entered by user
+
+
+3. Django CRUD (Create, Retrieve, Update, Delete) Class Based Views:
+
+# models.py
+
+from django.db import models
+
+class BookModel(models.Model):
+	title = models.CharField(max_length = 200)
+    author = models.CharField(max_length = 200)
+	description = models.TextField()
+
+	# renames the instances of the model with their title name
+	def __str__(self):
+		return self.title
+
+-> Run two Commands:
+- python manage.py makemigrations
+- python manage.py migrate
+
+# forms.py
+
+from django import forms
+from .models import BookModel
+
+class BookForm(forms.ModelForm):
+    # create a Meta Class
+    class Meta:
+        # specify the model to use
+        model = BookModel
+        # specify fields to be used
+        fields = ['title', 'author', 'description']
+
+
+# Using Class Based Views:
+
+-> At its core, a class-based view allows you to respond to different HTTP request methods with different class instance methods, instead of with conditionally branching code inside a single view function.
+
+# views.py(Basic)
+
+from django.http import HttpResponse
+
+def my_view(request):
+	if request.method == 'GET':
+		# <view logic>
+		return HttpResponse('result')
+
+# views.py(Basic)
+
+from django.http import HttpResponse
+from django.views import View
+
+class MyView(View):
+	def get(self, request):
+		# <view logic>
+		return HttpResponse('result')
+
+# urls.py
+
+from django.urls import path
+from myapp.views import MyView
+
+urlpatterns = [
+	path('about/', MyView.as_view()),
+]
+
+1. CreateView
+
+# views.py
+
+from django.views.generic.edit import CreateView
+from .models import BookModel
+
+class BookCreate(CreateView):
+	model = BookModel
+	fields = ['title', 'author', 'description']
+
+# urls.py
+
+from django.urls import path
+from .views import BookCreate
+
+urlpatterns = [
+	path('', BookCreate.as_view() ),
+]
+
+# bookmodel_form.html
+
+<form method="POST" enctype="multipart/form-data">
+
+	<!-- Security token -->
+	{% csrf_token %}
+
+	<!-- Using the formset -->
+	{{ form.as_p }}
+	
+	<input type="submit" value="Submit">
+</form>
+
+2. Retrieve Views (ListView)
+
+# views.py
+
+from django.views.generic.list import ListView
+from .models import BookModel
+
+class BookList(ListView):
+	model = BookModel
+
+# urls.py
+
+from django.urls import path
+from .views import BookList
+
+urlpatterns = [
+	path('', BookList.as_view()),
+]
+
+# bookmodel_list.html
+
+<ul>
+	<!-- Iterate over object_list -->
+	{% for object in object_list %}
+	<!-- Display Objects -->
+	<li>{{ object.title }}</li>
+	<li>{{ object.author }}</li>
+	<li>{{ object.description }}</li>
+
+	<hr/>
+	<!-- If object_list is empty -->
+	{% empty %}
+	<li>No objects yet.</li>
+	{% endfor %}
+</ul>
+
+2. Retrieve Views (DetailView)
+
+# views.py
+
+from django.views.generic.detail import DetailView
+from .models import BookModel
+
+class BookDetailView(DetailView):
+	model = BookModel
+
+# urls.py
+
+from django.urls import path
+from .views import BookDetailView
+
+urlpatterns = [
+	path('<pk>/', BookDetailView.as_view()),
+]
+
+# bookmodel_detail.html
+
+<h1>{{ object.title }}</h1>
+
+<p>{{ object.author }}</p>
+
+<p>{{ object.description }}</p>
+
+3. UpdateView:
+
+# views.py
+
+from django.views.generic.edit import UpdateView
+from .models import BookModel
+
+class BookUpdateView(UpdateView):
+	model = BookModel
+	fields = [
+		"title",
+		"description"
+	]
+	# can specify success url
+	# url to redirect after successfully
+	# updating details
+	success_url ="/"
+
+# urls.py
+
+from django.urls import path
+from .views import BookUpdateView
+
+urlpatterns = [
+	path('<pk>/update', BookUpdateView.as_view()),
+]
+
+# bookmodel_form.html
+
+<form method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" value="Save">
+</form>
+
+4. DeleteView
+
+# views.py
+
+from django.views.generic.edit import DeleteView
+from .models import BookModel
+
+class BookDeleteView(DeleteView):
+	model = GeeksModel
+	# can specify success url
+	# url to redirect after successfully
+	# deleting object
+	success_url ="/"
+
+# urls.py
+
+from django.urls import path
+from .views import BookDeleteView
+
+urlpatterns = [
+	path('<pk>/delete/', BookDeleteView.as_view()),
+]
+
+# bookmodel_confirm_delete.html
+
+<form method="post">
+{% csrf_token %}	
+<p>Are you sure you want to delete "{{ object }}"?</p>
+	<input type="submit" value="Confirm">
+</form>
+
+5. FormView
+
+# views.py
+
+from django.views.generic.edit import FormView
+from .forms import BookForm
+
+class BookFormView(FormView):
+	form_class = BookForm
+	template_name = "book / bookmodel_form.html"
+	# can specify success url
+	# url to redirect after successfully
+	# updating details
+	success_url ="/thanks/"
+
+# bookmodel_form.html
+
+<form method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" value="Save">
+</form>
+
+# urls.py
+
+from django.urls import path
+from .views import BookFormView
+
+urlpatterns = [
+	path('', BookFormView.as_view()),
+]

@@ -1,0 +1,83 @@
+Types of Views: 
+
+1.Function-Based Views
+2.Class-Based Views
+
+1. Function-Based Views:
+
+-> Function based views are writer using a function in python which receives as an argument HttpRequest object and returns an HttpResponse object.
+-> Function based views are generally divided into 4 basic strategies, i.e., CRUD(Create, Retrieve, Update, Delete).
+-> CRUD is the base of any framework one is using for development. 
+
+Function Based Views Example:
+
+""""""
+# models.py
+
+from django.db import models
+
+class BookModel(models.Model):
+    title = models.CharField(max_length=100)
+    author = models.CharField(max_length=100)
+    description = models.TextField()
+
+    # renames the instances of the model
+    # with their title name
+    def __str__(self):
+        return self.title
+""""""
+
+-> After creating this model, we need to run two commands in the terminal:
+1.python manage.py makemigrations
+2.python manage.py migrate
+
+3.Python manage.py shell
+>>> from geeks.models import GeeksModel
+>>> GeeksModel.objects.create(
+                       title="title1",author="author1",description="description1").save()
+>>> GeeksModel.objects.create(
+                       title="title2",author="author2",description="description2").save()
+>>> GeeksModel.objects.create(
+                       title="title3",author="author3",description="description3").save()
+
+""""""
+# admin.py
+
+from .models import BookModel
+from django.contrib import admin
+
+admin.site.register(BookModel)
+""""""
+
+
+""""""
+# views.py
+
+from django.shortcuts import render
+from .models import BookModel
+
+def list_view(request):
+    # dictionary for initial data with field names as keys
+    context = {}
+
+    # add the dictionary during initialization
+    context["dataset"] = BookModel.objects.all()
+    return render(request,"list_view.html",context)
+""""""
+
+""""""
+# list_view.html
+
+<div class="main">
+
+	{% for data in dataset %}.
+
+	{{ data.title }}<br/>
+    {{ data.author}}<br />
+	{{ data.description }}<br/>
+	<hr/>
+
+	{% endfor %}
+
+</div>
+""""""

@@ -1,0 +1,34 @@
+Django View Example:
+
+""""""
+# views.py
+
+from django.http import HttpResponse
+import datetime
+
+def index_view(request):
+    # fetch data and time
+    now = datetime.datetime.now()
+    # convert to string
+    html = "Time is {}".format(now)
+    # return response
+    return HttpResponse(html)
+""""""
+
+-> First, we import the class HttpResponse from the django.http module, along with Python’s datetime library.
+-> Next, we define a function called index_view. This is the view function.
+-> Each view function takes an HttpRequest object as its first parameter, which is typically named request.
+-> The view returns an HttpResponse object that contains the generated response. 
+-> Each view function is responsible for returning an HttpResponse object.
+
+""""""
+# urls.py
+
+from django.urls import path
+from .views import index_view
+
+urlpatterns = [
+    path('', index_view),
+]
+
+""""""
