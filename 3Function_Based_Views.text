@@ -32,12 +32,12 @@ class BookModel(models.Model):
 2.python manage.py migrate
 
 3.Python manage.py shell
->>> from geeks.models import GeeksModel
->>> GeeksModel.objects.create(
+>>> from book.models import BookModel
+>>> BookModel.objects.create(
                        title="title1",author="author1",description="description1").save()
->>> GeeksModel.objects.create(
+>>> BookModel.objects.create(
                        title="title2",author="author2",description="description2").save()
->>> GeeksModel.objects.create(
+>>> BookModel.objects.create(
                        title="title3",author="author3",description="description3").save()
 
 """"""
